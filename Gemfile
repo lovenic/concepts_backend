@@ -12,7 +12,7 @@ gem "jbuilder"
 gem "jwt", "~> 2.10"
 gem "devise_token_auth"
 gem "rack-cors", require: "rack/cors"
-gem "ruby-openai", "~> 6.3"
+gem "ruby-openai", "~> 8.3"
 gem "ancestry"
 gem "kaminari"
 
