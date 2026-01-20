@@ -39,7 +39,7 @@ env:
     - QUEUE_DB_HOST
     - CABLE_DB_HOST
     - CACHE_DB_HOST
-    - FASTMAIL_SMTP_PASSWORD # TODO: change to proton
+    - PROTON_SMTP_PASSWORD # TODO: change to proton
     - RC_WEBHOOK_AUTH # TODO: set 
     - APPLE_BUNDLE_IDENTIFIER
     - ROLLBAR_ACCESS_TOKEN
