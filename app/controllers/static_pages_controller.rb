@@ -13,4 +13,7 @@ class StaticPagesController < ApplicationController
 
   def terms
   end
+
+  def help
+  end
 end

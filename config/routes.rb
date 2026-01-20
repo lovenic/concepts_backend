@@ -9,6 +9,8 @@ Rails.application.routes.draw do
   root "static_pages#home"
   get "privacy", to: "static_pages#privacy"
   get "terms", to: "static_pages#terms"
+  get "help", to: "static_pages#help"
+  get "support", to: "static_pages#help" # Alias for help
 
   mount_devise_token_auth_for "User", at: "auth"
 
