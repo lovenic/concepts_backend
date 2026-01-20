@@ -28,6 +28,12 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[8.1]
       t.string :image
       t.string :email
 
+      # Usage and subscription tracking
+      t.integer  :daily_concepts_count, default: 0, null: false
+      t.datetime :last_concept_generated_at
+      t.datetime :last_subscribed_at
+      t.datetime :last_unsubscribed_at
+
       ## Tokens
       t.json :tokens
 
