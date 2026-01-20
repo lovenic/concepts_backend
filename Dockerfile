@@ -51,8 +51,17 @@ COPY . .
 # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
 RUN bundle exec bootsnap precompile -j 1 app/ lib/
 
-# Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN RAILS_ENV=production PRIMARY_DB_HOST=postgresql://user:password@hostname:5432/database_name QUEUE_DB_HOST=postgresql://user:password@hostname:5432/database_name CABLE_DB_HOST=postgresql://user:password@hostname:5432/database_name CACHE_DB_HOST=postgresql://user:password@hostname:5432/database_name SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+# Precompile assets in production. Requires Rails master key provided as a build secret.
+# Example: docker build --secret id=rails_master_key,src=config/master.key .
+RUN --mount=type=secret,id=rails_master_key \
+    export RAILS_MASTER_KEY="$(cat /run/secrets/rails_master_key)" && \
+    RAILS_ENV=production \
+    PRIMARY_DB_HOST=postgresql://user:password@hostname:5432/database_name \
+    QUEUE_DB_HOST=postgresql://user:password@hostname:5432/database_name \
+    CABLE_DB_HOST=postgresql://user:password@hostname:5432/database_name \
+    CACHE_DB_HOST=postgresql://user:password@hostname:5432/database_name \
+    SECRET_KEY_BASE_DUMMY=1 \
+    ./bin/rails assets:precompile
 
 # Final stage for app image
 FROM base

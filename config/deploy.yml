@@ -83,6 +83,10 @@ asset_path: /rails/public/assets
 # Configure the image builder.
 builder:
   arch: amd64
+  # Pass Rails master key to the build so assets can be precompiled.
+  # Provide it via environment variable or .kamal/secrets as RAILS_MASTER_KEY.
+  secrets:
+    - RAILS_MASTER_KEY
 
   # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
   # remote: ssh://docker@docker-builder-server
