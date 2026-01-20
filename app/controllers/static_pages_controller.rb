@@ -3,7 +3,7 @@ class StaticPagesController < ApplicationController
 
   def home
     # Fetch all categories and subcategories for the horizontal feed
-    @categories = Category.includes(:children).roots
+    @categories = Category.roots
     @all_categories = Category.all.order(:name) # Flattened list for the feed
     @users_count = User.count
   end
