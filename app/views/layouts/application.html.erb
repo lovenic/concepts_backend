@@ -3,6 +3,29 @@
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "concepts" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : 'Микрообучение — изучай новые концепции за 5 минут в день' %>">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= request.original_url %>">
+    <meta property="og:title" content="<%= content_for?(:title) ? yield(:title) : 'concepts' %>">
+    <meta property="og:description" content="<%= content_for?(:description) ? yield(:description) : 'Микрообучение — изучай новые концепции за 5 минут в день' %>">
+    <meta property="og:image" content="<%= image_url('socials.png') %>">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="<%= request.original_url %>">
+    <meta name="twitter:title" content="<%= content_for?(:title) ? yield(:title) : 'concepts' %>">
+    <meta name="twitter:description" content="<%= content_for?(:description) ? yield(:description) : 'Микрообучение — изучай новые концепции за 5 минут в день' %>">
+    <meta name="twitter:image" content="<%= image_url('socials.png') %>">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
