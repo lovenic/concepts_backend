@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_20_204026) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_21_173225) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -66,6 +66,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_20_204026) do
     t.integer "daily_concepts_count", default: 0, null: false
     t.string "email"
     t.string "encrypted_password", default: "", null: false
+    t.string "expo_push_token"
     t.string "image"
     t.boolean "is_subscribed", default: false, null: false
     t.datetime "last_concept_generated_at"

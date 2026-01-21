@@ -17,6 +17,7 @@ gem "rack-cors", require: "rack/cors"
 gem "ruby-openai", "~> 6.3"
 gem "ancestry"
 gem "kaminari"
+gem "httparty"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"

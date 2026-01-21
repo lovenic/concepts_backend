@@ -36,6 +36,7 @@ Rails.application.routes.draw do
     end
     patch "users/update_timezone", to: "users#update_timezone"
     resources :subscriptions, only: [:create]
+    resources :push_tokens, only: [:create]
     delete "/accounts", to: "accounts#destroy"
   end
 end
