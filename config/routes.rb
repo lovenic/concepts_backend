@@ -3,6 +3,7 @@ Rails.application.routes.draw do
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
+  mount MissionControl::Jobs::Engine, at: "/jobs"
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Static pages
@@ -12,7 +13,9 @@ Rails.application.routes.draw do
   get "help", to: "static_pages#help"
   get "support", to: "static_pages#help" # Alias for help
 
-  mount_devise_token_auth_for "User", at: "auth"
+  mount_devise_token_auth_for "User", at: "auth", controllers: {
+    registrations: "overrides/registrations"
+  }
 
   namespace :api do
     namespace :auth do

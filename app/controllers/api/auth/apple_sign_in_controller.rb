@@ -127,6 +127,7 @@ module API
           end
         end
 
+        # Create new user (welcome email will be sent via after_create_commit callback in User model)
         User.create!(
           provider: "apple",
           uid: apple_user_id,

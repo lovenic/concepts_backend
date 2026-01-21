@@ -26,5 +26,6 @@ module Backend
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+    config.mission_control.jobs.base_controller_class = "ActionController::Base"
   end
 end

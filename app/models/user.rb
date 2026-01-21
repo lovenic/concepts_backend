@@ -17,6 +17,8 @@ class User < ApplicationRecord
 
   scope :subscribed, -> { where(is_subscribed: true) }
 
+  after_create_commit :send_welcome_email_if_needed
+
   DAILY_CONCEPT_LIMIT = 3
 
   def can_generate_concept?
@@ -49,5 +51,23 @@ class User < ApplicationRecord
   def remaining_daily_concepts
     reset_daily_concepts_count_if_needed!
     [DAILY_CONCEPT_LIMIT - daily_concepts_count, 0].max
+  end
+
+  private
+
+  def send_welcome_email_if_needed
+    # Only send welcome email for users with real email addresses (not placeholder)
+    return unless email.present?
+    # Skip placeholder emails (like apple_xxx@concepts.local or apple_xxx@backend.local)
+    return if email.include?("@#{Rails.application.class.module_parent_name.downcase}.local")
+
+    Rails.logger.info "Sending welcome email to #{email} (provider: #{provider})"
+    begin
+      UserMailer.welcome_email(self).deliver_now
+      Rails.logger.info "Welcome email sent successfully to #{email}"
+    rescue => e
+      Rails.logger.error "Failed to send welcome email: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+    end
   end
 end

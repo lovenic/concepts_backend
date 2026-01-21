@@ -4,10 +4,14 @@ module API
 
     def destroy
       user = current_user
+      user_email = user.email
 
       sign_out(user)
 
       ActiveRecord::Base.transaction do
+        # Send deletion email before deleting user data
+        UserMailer.account_deletion_email(user).deliver_now if user_email.present?
+        
         # Delete pins and likes
         user.pins.destroy_all
         user.likes.destroy_all
