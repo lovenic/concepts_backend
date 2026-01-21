@@ -24,9 +24,9 @@ module API
         concepts = concepts.newest
       end
 
-      # Pagination
-      page = params[:page]&.to_i || 1
-      per_page = [params[:per_page]&.to_i || 20, 100].min # Cap at 100
+      # Pagination with validation
+      page = [params[:page]&.to_i || 1, 1].max # Ensure page >= 1
+      per_page = [[params[:per_page]&.to_i || 20, 1].max, 100].min # Cap at 100, min 1
       concepts = concepts.page(page).per(per_page)
 
       # Preload parent categories to avoid N+1 queries
@@ -46,12 +46,22 @@ module API
     def generate
       # Validate category_id if provided
       if params[:category_id].present?
-        category = Category.find_by(id: params[:category_id])
+        # Validate category_id is numeric to prevent injection
+        category_id = params[:category_id].to_i
+        if category_id <= 0 || params[:category_id].to_s != category_id.to_s
+          return render json: {
+            error: "Invalid category_id",
+            code: "INVALID_CATEGORY_ID",
+            details: { category_id: params[:category_id] }
+          }, status: :bad_request
+        end
+        
+        category = Category.find_by(id: category_id)
         unless category
           return render json: {
             error: "Category not found",
             code: "CATEGORY_NOT_FOUND",
-            details: { category_id: params[:category_id] }
+            details: { category_id: category_id }
           }, status: :not_found
         end
       end
@@ -70,7 +80,7 @@ module API
         }, status: :too_many_requests
       end
 
-      category = params[:category_id].present? ? Category.find_by(id: params[:category_id]) : nil
+      category = params[:category_id].present? ? Category.find_by(id: params[:category_id].to_i) : nil
 
       service = ConceptGenerationService.new(user: current_user, category: category)
       concept = service.call
@@ -81,6 +91,18 @@ module API
       concept.reload
 
       render json: concept_to_json(concept), status: :created
+    rescue ActiveRecord::RecordInvalid => e
+      # Handle race condition where limit was exceeded between check and increment
+      remaining = current_user.reload.remaining_daily_concepts
+      render json: {
+        error: "Daily limit exceeded",
+        code: "RATE_LIMIT_EXCEEDED",
+        details: {
+          limit: User::DAILY_CONCEPT_LIMIT,
+          remaining: remaining,
+          message: "You've reached your daily limit of #{User::DAILY_CONCEPT_LIMIT} concepts. Take a moment to explore amazing concepts created by our community!"
+        }
+      }, status: :too_many_requests
     rescue StandardError => e
       Rails.logger.error "FeedController#generate error: #{e.message}"
       error_code = case e.message

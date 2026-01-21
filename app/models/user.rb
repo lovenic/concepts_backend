@@ -14,6 +14,7 @@ class User < ApplicationRecord
 
   validates :timezone, presence: true
   validates :email, presence: true, if: -> { provider == 'email' }
+  validates :expo_push_token, length: { maximum: 500 }, allow_nil: true
 
   scope :subscribed, -> { where(is_subscribed: true) }
 
@@ -27,9 +28,20 @@ class User < ApplicationRecord
   end
 
   def increment_daily_concepts_count!
-    reset_daily_concepts_count_if_needed!
-    increment!(:daily_concepts_count)
-    touch(:last_concept_generated_at)
+    # Use transaction with row-level locking to prevent race conditions
+    transaction do
+      # Reload with lock to prevent concurrent modifications
+      lock!
+      reset_daily_concepts_count_if_needed!
+      
+      # Double-check limit after lock to prevent race condition
+      if daily_concepts_count >= DAILY_CONCEPT_LIMIT
+        raise ActiveRecord::RecordInvalid.new(self.tap { |u| u.errors.add(:base, "Daily limit exceeded") })
+      end
+      
+      increment!(:daily_concepts_count)
+      touch(:last_concept_generated_at)
+    end
   end
 
   def reset_daily_concepts_count_if_needed!

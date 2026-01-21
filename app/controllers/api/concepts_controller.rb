@@ -1,14 +1,16 @@
 module API
   class ConceptsController < BaseController
     def show
-      concept = Concept.includes(:category, :user).find(params[:id])
+      concept = find_concept_by_id
+      return if performed? # Early return if error was rendered
       render json: concept_to_json(concept)
     rescue ActiveRecord::RecordNotFound
       render json: { error: "Concept not found" }, status: :not_found
     end
 
     def like
-      concept = Concept.includes(:category, :user).find(params[:id])
+      concept = find_concept_by_id
+      return if performed? # Early return if error was rendered
       
       like = current_user.likes.find_by(concept_id: concept.id)
       
@@ -33,7 +35,8 @@ module API
     end
 
     def pin
-      concept = Concept.includes(:category, :user).find(params[:id])
+      concept = find_concept_by_id
+      return if performed? # Early return if error was rendered
       
       pin = current_user.pins.find_by(concept_id: concept.id)
       
@@ -58,6 +61,19 @@ module API
     end
 
     private
+
+    def find_concept_by_id
+      concept_id = params[:id].to_i
+      if concept_id <= 0 || params[:id].to_s != concept_id.to_s
+        render json: {
+          error: "Invalid concept ID",
+          code: "INVALID_CONCEPT_ID",
+          details: { concept_id: params[:id] }
+        }, status: :bad_request
+        return nil
+      end
+      Concept.includes(:category, :user).find(concept_id)
+    end
 
     def concept_to_json(concept)
       category_data = {

@@ -5,19 +5,23 @@ module API
 
       # Filter by category
       if params[:category_id].present?
-        category = Category.find_by(id: params[:category_id])
-        if category
-          category_ids = [category.id] + category.descendant_ids
-          pins = pins.joins(:concept).where(concepts: { category_id: category_ids })
+        # Validate category_id is numeric
+        category_id = params[:category_id].to_i
+        if category_id > 0 && params[:category_id].to_s == category_id.to_s
+          category = Category.find_by(id: category_id)
+          if category
+            category_ids = [category.id] + category.descendant_ids
+            pins = pins.joins(:concept).where(concepts: { category_id: category_ids })
+          end
         end
       end
 
       # Order by created_at desc (most recent first)
       pins = pins.order(created_at: :desc)
 
-      # Pagination
-      page = params[:page]&.to_i || 1
-      per_page = [params[:per_page]&.to_i || 20, 100].min
+      # Pagination with validation
+      page = [params[:page]&.to_i || 1, 1].max # Ensure page >= 1
+      per_page = [[params[:per_page]&.to_i || 20, 1].max, 100].min # Cap at 100, min 1
       pins = pins.page(page).per(per_page)
 
       concepts = pins.map(&:concept)

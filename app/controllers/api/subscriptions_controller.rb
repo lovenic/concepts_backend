@@ -22,7 +22,15 @@ module API
     def valid_webhook_auth?
       expected = ENV["RC_WEBHOOK_AUTH"]
       provided = request.headers["Authorization"]
-      expected.blank? || provided == expected
+      
+      # Require authentication token in production
+      if Rails.env.production?
+        return false if expected.blank?
+        return provided.present? && provided == expected
+      end
+      
+      # In development/test, allow if token matches or if not configured (for local testing)
+      expected.blank? || (provided.present? && provided == expected)
     end
 
     def unauthorized!

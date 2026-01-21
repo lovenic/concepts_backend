@@ -7,7 +7,9 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins "*" # In production, replace with specific frontend domain
+    # In production, use specific frontend domain from environment variable
+    # In development, allow all origins for local testing
+    origins Rails.env.production? ? ENV.fetch("FRONTEND_ORIGIN", "*").split(",") : "*"
 
     resource "*",
       headers: :any,

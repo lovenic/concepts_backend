@@ -17,7 +17,7 @@
     <meta name="twitter:url" content="<%= request.original_url %>">
     <meta name="twitter:title" content="<%= content_for?(:title) ? yield(:title) : 'concepts' %>">
     <meta name="twitter:description" content="<%= content_for?(:description) ? yield(:description) : 'Learn new concepts in 2 minutes a day. Think different today.' %>">
-    <meta name="twitter:image" content="<%= request.base_url %>/socials.png">
+    <meta name="twitter:image" content="<%= request.base_url %>/socials.png?v=<%= Time.now.strftime('%Y%m%d') %>">
 
     <!-- Favicons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">

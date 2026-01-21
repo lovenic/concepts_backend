@@ -13,6 +13,12 @@ module API
         return render json: { error: "expo_push_token is required" }, status: :bad_request
       end
 
+      # Validate token length to prevent DoS
+      if expo_push_token.length > 500
+        Rails.logger.error "PushTokensController: expo_push_token too long (#{expo_push_token.length} chars)"
+        return render json: { error: "Invalid push token format" }, status: :bad_request
+      end
+
       update_expo_push_token!(expo_push_token)
 
       head :ok
