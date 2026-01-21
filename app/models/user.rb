@@ -6,7 +6,7 @@ class User < ApplicationRecord
   include DeviseTokenAuth::Concerns::User
   include UserTimeManagement
 
-  has_many :concepts, dependent: :destroy
+  has_many :concepts, dependent: :nullify
   has_many :pins, dependent: :destroy
   has_many :likes, dependent: :destroy
   has_many :pinned_concepts, through: :pins, source: :concept

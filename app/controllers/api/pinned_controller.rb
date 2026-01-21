@@ -1,7 +1,7 @@
 module API
   class PinnedController < BaseController
     def index
-      pins = current_user.pins.includes(:concept)
+      pins = current_user.pins.includes(concept: :user)
 
       # Filter by category
       if params[:category_id].present?
@@ -78,10 +78,10 @@ module API
         pinned: true, # Always true in pinned controller
         created_at: concept.created_at.iso8601,
         pinned_at: current_user.pins.find_by(concept_id: concept.id)&.created_at&.iso8601,
-        user: {
+        user: concept.user ? {
           id: concept.user.id,
           name: concept.user.name || concept.user.email
-        }
+        } : nil
       }
     end
   end

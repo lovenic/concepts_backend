@@ -1,14 +1,14 @@
 module API
   class ConceptsController < BaseController
     def show
-      concept = Concept.includes(:category).find(params[:id])
+      concept = Concept.includes(:category, :user).find(params[:id])
       render json: concept_to_json(concept)
     rescue ActiveRecord::RecordNotFound
       render json: { error: "Concept not found" }, status: :not_found
     end
 
     def like
-      concept = Concept.includes(:category).find(params[:id])
+      concept = Concept.includes(:category, :user).find(params[:id])
       
       like = current_user.likes.find_by(concept_id: concept.id)
       
@@ -33,7 +33,7 @@ module API
     end
 
     def pin
-      concept = Concept.includes(:category).find(params[:id])
+      concept = Concept.includes(:category, :user).find(params[:id])
       
       pin = current_user.pins.find_by(concept_id: concept.id)
       
@@ -85,10 +85,10 @@ module API
         liked: concept.liked_by?(current_user),
         pinned: concept.pinned_by?(current_user),
         created_at: concept.created_at.iso8601,
-        user: {
+        user: concept.user ? {
           id: concept.user.id,
           name: concept.user.name || concept.user.email
-        }
+        } : nil
       }
     end
   end

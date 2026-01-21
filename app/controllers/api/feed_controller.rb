@@ -1,7 +1,7 @@
 module API
   class FeedController < BaseController
     def index
-      concepts = Concept.includes(:category)
+      concepts = Concept.includes(:category, :user)
 
       # Filter by category
       if params[:category_id].present?
@@ -139,10 +139,10 @@ module API
         liked: concept.liked_by?(current_user),
         pinned: concept.pinned_by?(current_user),
         created_at: concept.created_at.iso8601,
-        user: {
+        user: concept.user ? {
           id: concept.user.id,
           name: concept.user.name || concept.user.email
-        }
+        } : nil
       }
     end
   end

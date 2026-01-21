@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_18_100335) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_20_204026) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -30,7 +30,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_18_100335) do
     t.datetime "created_at", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.index ["category_id"], name: "index_concepts_on_category_id"
     t.index ["created_at"], name: "index_concepts_on_created_at"
     t.index ["user_id"], name: "index_concepts_on_user_id"
@@ -90,7 +90,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_18_100335) do
   end
 
   add_foreign_key "concepts", "categories"
-  add_foreign_key "concepts", "users"
+  add_foreign_key "concepts", "users", on_delete: :nullify
   add_foreign_key "likes", "concepts"
   add_foreign_key "likes", "users"
   add_foreign_key "pins", "concepts"
