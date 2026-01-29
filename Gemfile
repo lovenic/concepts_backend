@@ -11,7 +11,7 @@ gem "puma", ">= 5.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
-gem "jwt", "~> 2.10"
+gem "jwt", "~> 3.1"
 gem "devise_token_auth"
 gem "rack-cors", require: "rack/cors"
 gem "ruby-openai", "~> 6.3"
