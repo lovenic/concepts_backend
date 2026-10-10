@@ -13,6 +13,9 @@ development:
   daily_notification_scheduler:
     class: DailyNotificationSchedulerJob
     schedule: every hour
+  daily_library_generation:
+    class: DailyLibraryGenerationJob
+    schedule: at 4am every day
 
 production:
   clear_solid_queue_finished_jobs:
@@ -21,3 +24,6 @@ production:
   daily_notification_scheduler:
     class: DailyNotificationSchedulerJob
     schedule: every hour
+  daily_library_generation:
+    class: DailyLibraryGenerationJob
+    schedule: at 4am every day

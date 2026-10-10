@@ -1,5 +1,5 @@
 class ConceptGenerationService
-  def initialize(user:, category: nil)
+  def initialize(user: nil, category: nil)
     @user = user
     @category = category
   end
@@ -26,7 +26,7 @@ class ConceptGenerationService
     else
       "any field of knowledge"
     end
-    
+
     category_context = if @category
       "\n\n## ⚠️ CRITICAL: Category Requirement - THIS IS MANDATORY ⚠️\n\nYou MUST generate a concept that is DIRECTLY and SPECIFICALLY about #{category_name}. This is NOT optional.\n\nREQUIREMENTS:\n- The concept MUST be fundamentally about #{category_name} or its specific subfields\n- It MUST draw from #{category_name} principles, theories, practices, or domain knowledge\n- It MUST NOT be a generic concept that could apply to any category\n- An expert in #{category_name} would immediately recognize this as belonging to their field\n\n❌ WRONG EXAMPLES (concepts that don't belong to #{category_name}):\n- \"Success through mistakes\" - this is Psychology/Education, NOT #{category_name}\n- \"Embracing uncertainty\" - this is Philosophy/Personal Development, NOT #{category_name}\n- \"Constraints increase creativity\" - this is Psychology/Design, NOT #{category_name}\n- Any concept about learning, personal growth, or general life advice when #{category_name} is Technology, Science, or Business\n\n✅ CORRECT: The concept must use #{category_name} terminology, reference #{category_name} theories, or reveal something specific about how #{category_name} systems work.\n\nBefore generating, ask yourself: \"Would this concept appear in a #{category_name} textbook, research paper, or professional discussion?\" If the answer is no, reframe it to be specifically about #{category_name}."
     else
@@ -146,7 +146,7 @@ class ConceptGenerationService
     assigned_category = @category
     Rails.logger.info "ConceptGenerationService: Assigning category #{assigned_category.id} (#{assigned_category.name}) to concept"
 
-    concept = @user.concepts.create!(
+    concept_attributes = {
       title: concept_data[:title] || concept_data["title"],
       category: assigned_category,
       body: {
@@ -158,7 +158,15 @@ class ConceptGenerationService
         mental_model: concept_data[:mental_model] || concept_data["mental_model"],
         experiment: concept_data[:experiment] || concept_data["experiment"]
       }
-    )
+    }
+
+    # Library concepts are created by the scheduled generator and do not belong
+    # to an individual user. User-generated concepts keep their existing owner.
+    concept = if @user
+      @user.concepts.create!(concept_attributes)
+    else
+      Concept.create!(concept_attributes)
+    end
 
     # Verify category was assigned correctly
     concept.reload
